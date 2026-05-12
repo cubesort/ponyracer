@@ -5,6 +5,7 @@ import { App } from './app';
 class AppTester {
   readonly fixture = TestBed.createComponent(App);
   readonly title = page.getByRole('heading', { level: 1 });
+  readonly menu = page.getByCss('pr-menu');
 }
 
 describe('App', () => {
@@ -14,5 +15,11 @@ describe('App', () => {
     const tester = new AppTester();
 
     await expect.element(tester.title).toHaveTextContent('Ponyracer');
+  });
+
+  it('should display the menu component', async () => {
+    const tester = new AppTester();
+
+    await expect.element(tester.menu).toBeVisible();
   });
 });
