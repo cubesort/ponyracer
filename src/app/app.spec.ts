@@ -6,6 +6,7 @@ class AppTester {
   readonly fixture = TestBed.createComponent(App);
   readonly title = page.getByRole('heading', { level: 1 });
   readonly menu = page.getByCss('pr-menu');
+  readonly races = page.getByCss('pr-races');
 }
 
 describe('App', () => {
@@ -21,5 +22,11 @@ describe('App', () => {
     const tester = new AppTester();
 
     await expect.element(tester.menu).toBeVisible();
+  });
+
+  it('should display the races component', async () => {
+    const tester = new AppTester();
+
+    await expect.element(tester.races).toBeVisible();
   });
 });

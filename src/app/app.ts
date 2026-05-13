@@ -1,9 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { Menu } from './menu/menu';
+import { Races } from './races/races';
 
 @Component({
   selector: 'pr-root',
-  imports: [Menu],
+  imports: [Menu, Races],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
