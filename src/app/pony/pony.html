@@ -1,0 +1,5 @@
+@let pony = ponyModel();
+<figure (click)="selectPony()">
+  <img src="{{ ponyImageUrl() }}" alt="{{ pony.name }}" />
+  <figcaption>{{ pony.name }}</figcaption>
+</figure>
