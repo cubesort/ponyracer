@@ -1,11 +1,11 @@
 import { Component, input } from '@angular/core';
 import { RaceModel } from '../models/race-model';
 import { Pony } from '../pony/pony';
-import { DatePipe } from '@angular/common';
+import { FromNowPipe } from '../from-now-pipe';
 
 @Component({
   selector: 'pr-race',
-  imports: [Pony, DatePipe],
+  imports: [Pony, FromNowPipe],
   templateUrl: './race.html',
   styleUrl: './race.css',
 })
