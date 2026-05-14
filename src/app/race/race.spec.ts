@@ -7,6 +7,7 @@ import { Race } from './race';
 class RaceTester {
   constructor(readonly fixture: ComponentFixture<Race>) {}
   readonly title = page.getByRole('heading', { level: 2 });
+  readonly startInstant = page.getByRole('paragraph').nth(0);
   readonly ponies = page.getByCss('pr-pony');
 }
 
@@ -35,6 +36,8 @@ describe('Race', () => {
 
     // then we should have the name and ponies displayed in the template
     await expect.element(tester.title).toHaveTextContent('Paris');
+    await expect.element(tester.startInstant).toBeVisible();
+    await expect.element(tester.startInstant).toHaveTextContent('2/18/24, 8:02 AM');
     await expect.element(tester.ponies).toHaveLength(5);
   });
 });
