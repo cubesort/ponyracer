@@ -1,5 +1,8 @@
 import { TestBed } from '@angular/core/testing';
+import { Mocked } from 'vitest';
 import { page } from 'vitest/browser';
+import { RaceModel } from '../models/race-model';
+import { RaceService } from '../race-service';
 import { Races } from './races';
 
 class RacesTester {
@@ -8,7 +11,18 @@ class RacesTester {
 }
 
 describe('Races', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  let raceService: Pick<Mocked<RaceService>, 'list'>;
+
+  beforeEach(() => {
+    raceService = { list: vi.fn().mockName('RaceService.list') };
+    raceService.list.mockReturnValue([
+      { id: 1, name: 'Tokyo', startInstant: '2024-02-18T08:03:00' },
+      { id: 2, name: 'Paris', startInstant: '2024-02-18T08:04:00' }
+    ] as Array<RaceModel>);
+    TestBed.configureTestingModule({
+      providers: [{ provide: RaceService, useValue: raceService }]
+    });
+  });
 
   it('should display every race', async () => {
     const tester = new RacesTester();
