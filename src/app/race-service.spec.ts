@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { RaceModel } from './models/race-model';
 import { RaceService } from './race-service';
 
 describe('RaceService', () => {
@@ -7,11 +8,21 @@ describe('RaceService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     raceService = TestBed.inject(RaceService);
+    vi.useFakeTimers();
   });
 
-  it('should list races', () => {
-    const races = raceService.list();
+  afterEach(() => vi.useRealTimers());
 
-    expect(races, 'The service should return two races for the `list()` method').toHaveLength(2);
+  it('should list races', () => {
+    let fetchedRaces: Array<RaceModel> = [];
+    raceService.list().subscribe((races: Array<RaceModel>) => (fetchedRaces = races));
+
+    vi.advanceTimersByTime(200);
+
+    expect(fetchedRaces, 'The service should return the races after a 500ms delay').toHaveLength(0);
+
+    vi.advanceTimersByTime(400);
+
+    expect(fetchedRaces, 'The service should return two races in an Observable for the `list()` method after 500ms').toHaveLength(2);
   });
 });
