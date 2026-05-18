@@ -1,28 +1,32 @@
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RaceModel } from './models/race-model';
 import { RaceService } from './race-service';
 
 describe('RaceService', () => {
   let raceService: RaceService;
+  let http: HttpTestingController;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClientTesting()]
+    });
     raceService = TestBed.inject(RaceService);
-    vi.useFakeTimers();
+    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => vi.useRealTimers());
+  afterAll(() => http.verify());
 
   it('should list races', () => {
-    let fetchedRaces: Array<RaceModel> = [];
-    raceService.list().subscribe((races: Array<RaceModel>) => (fetchedRaces = races));
+    // fake response
+    const hardcodedRaces = [{ name: 'Paris' }, { name: 'Tokyo' }, { name: 'Lyon' }] as Array<RaceModel>;
 
-    vi.advanceTimersByTime(200);
+    let actualRaces: Array<RaceModel> = [];
+    raceService.list().subscribe((races: Array<RaceModel>) => (actualRaces = races));
 
-    expect(fetchedRaces, 'The service should return the races after a 500ms delay').toHaveLength(0);
+    http.expectOne('https://ponyracer.ninja-squad.com/api/races?status=PENDING').flush(hardcodedRaces);
 
-    vi.advanceTimersByTime(400);
-
-    expect(fetchedRaces, 'The service should return two races in an Observable for the `list()` method after 500ms').toHaveLength(2);
+    expect(actualRaces, 'The `list` method should return an array of RaceModel wrapped in an Observable').not.toHaveLength(0);
+    expect(actualRaces).toStrictEqual(hardcodedRaces);
   });
 });
