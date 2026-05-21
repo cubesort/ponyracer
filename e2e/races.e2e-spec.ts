@@ -35,7 +35,7 @@ test.describe('Races page', () => {
         ]
       });
     });
-    await page.goto('/');
+    await page.goto('/races');
   });
 
   test('should display a race list', async ({ page }) => {

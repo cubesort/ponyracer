@@ -6,21 +6,21 @@ test.describe('Home page', () => {
   });
 
   test('should display a title', async ({ page }) => {
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Ponyracer');
+    await expect(page.locator('h1')).toContainText('Ponyracer');
+    await expect(page.locator('small')).toContainText('Always a pleasure to bet on ponies');
+    await expect(page.locator('.btn-primary').filter({ hasText: 'Races' })).toHaveAttribute('href', '/races');
   });
 
   test('should display a navbar', async ({ page }) => {
-    const navbar = page.getByRole('navigation');
-    await expect(navbar.getByText('PonyRacer')).toBeVisible();
-    await expect(navbar.getByText('Races')).toBeVisible();
+    await expect(page.locator('.navbar-brand').filter({ hasText: 'PonyRacer' })).toHaveAttribute('href', '/');
+    await expect(page.locator('.nav-link').filter({ hasText: 'Races' })).toHaveAttribute('href', '/races');
   });
 
   test('should display a navbar collapsed on small screen', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    const navbar = page.getByRole('navigation');
-    const navbarBrand = navbar.getByText('PonyRacer');
+    const navbarBrand = page.locator('.navbar-brand');
     await expect(navbarBrand).toBeVisible();
-    const navbarLink = navbar.getByText('Races');
+    const navbarLink = page.locator('.nav-link');
     await expect(navbarLink).not.toBeVisible();
 
     // toggle the navbar
