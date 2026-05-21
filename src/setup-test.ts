@@ -7,16 +7,13 @@ beforeEach(() => {
 
 afterEach(() => {
   // check if there are no console errors
-  expect(
-    console.error,
-    'There should be no console errors (see src/setup-test.ts)',
-  ).not.toHaveBeenCalled();
+  expect(console.error, 'There should be no console errors (see src/setup-test.ts)').not.toHaveBeenCalled();
 });
 
 locators.extend({
   getByCss(selector: string) {
     return selector;
-  },
+  }
 });
 
 declare module 'vitest/browser' {

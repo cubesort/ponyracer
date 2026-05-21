@@ -5,6 +5,6 @@ import { RouterLink } from '@angular/router';
   selector: 'pr-home',
   imports: [RouterLink],
   templateUrl: './home.html',
-  styleUrl: './home.css',
+  styleUrl: './home.css'
 })
 export class Home {}

@@ -6,12 +6,12 @@ import { RouterLink } from '@angular/router';
   selector: 'pr-menu',
   imports: [RouterLink],
   templateUrl: './menu.html',
-  styleUrl: './menu.css',
+  styleUrl: './menu.css'
 })
 export class Menu {
   readonly navbarCollapsed = signal(true);
 
   toggleNavbar() {
-    this.navbarCollapsed.update((navbarCollapsed) => !navbarCollapsed);
+    this.navbarCollapsed.update(navbarCollapsed => !navbarCollapsed);
   }
 }

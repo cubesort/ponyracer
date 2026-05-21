@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { API_BASE_URL } from './tokens';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class RaceService {
   private readonly http = inject(HttpClient);
@@ -12,7 +12,7 @@ export class RaceService {
 
   list() {
     return this.http.get<Array<RaceModel>>(`${this.baseUrl}/api/races`, {
-      params: { status: 'PENDING' },
+      params: { status: 'PENDING' }
     });
   }
 }

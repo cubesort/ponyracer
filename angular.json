@@ -2,8 +2,7 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm",
-    "schematicCollections": ["@schematics/angular", "playwright-ng-schematics"]
+    "packageManager": "npm"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -77,12 +76,7 @@
             "reporters": ["default", "json"],
             "outputFile": "results/vitest-results.json",
             "coverageReporters": ["json-summary", "text", "html"],
-            "coverageExclude": [
-              "src/app/app.*.ts",
-              "src/app/models",
-              "src/app/**/*.routes.ts",
-              "src/**/i18n-*.ts"
-            ]
+            "coverageExclude": ["src/app/app.*.ts", "src/app/models", "src/app/**/*.routes.ts", "src/**/i18n-*.ts"]
           }
         },
         "lint": {
@@ -95,7 +89,7 @@
         "e2e": {
           "builder": "playwright-ng-schematics:playwright",
           "options": {
-            "devServerTarget": "ponyracer:serve"
+            "devServerTarget": "ponyracer:serve:e2e"
           },
           "configurations": {
             "production": {

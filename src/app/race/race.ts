@@ -7,7 +7,7 @@ import { FromNowPipe } from '../from-now-pipe';
   selector: 'pr-race',
   imports: [Pony, FromNowPipe],
   templateUrl: './race.html',
-  styleUrl: './race.css',
+  styleUrl: './race.css'
 })
 export class Race {
   readonly raceModel = input.required<RaceModel>();

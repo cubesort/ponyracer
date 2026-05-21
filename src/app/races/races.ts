@@ -7,7 +7,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   selector: 'pr-races',
   imports: [Race],
   templateUrl: './races.html',
-  styleUrl: './races.css',
+  styleUrl: './races.css'
 })
 export class Races {
   private readonly raceService = inject(RaceService);
