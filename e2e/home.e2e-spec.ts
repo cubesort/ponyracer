@@ -8,7 +8,7 @@ test.describe('Home page', () => {
   test('should display a title', async ({ page }) => {
     await expect(page.locator('h1')).toContainText('Ponyracer');
     await expect(page.locator('small')).toContainText('Always a pleasure to bet on ponies');
-    await expect(page.locator('.btn-primary').filter({ hasText: 'Races' })).toHaveAttribute('href', '/races');
+    await expect(page.locator('.btn-primary').filter({ hasText: 'Login' })).toHaveAttribute('href', '/login');
   });
 
   test('should display a navbar', async ({ page }) => {

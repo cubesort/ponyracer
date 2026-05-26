@@ -8,6 +8,7 @@ class HomeTester {
   readonly title = page.getByRole('heading', { level: 1 });
   readonly subtitle = this.title.getByCss('small');
   readonly racesLink = page.getByRole('link', { name: 'Races' });
+  readonly loginLink = page.getByRole('link', { name: 'Login' });
 }
 
 describe('Home', () => {
@@ -26,9 +27,11 @@ describe('Home', () => {
     await expect.element(tester.subtitle).toHaveTextContent('Always a pleasure to bet on ponies');
   });
 
-  it('should display only a link to go the races page', async () => {
+  it('should display a link to go to the login page', async () => {
     const tester = new HomeTester();
 
-    await expect.element(tester.racesLink).toHaveAttribute('href', '/races');
+    await expect.element(tester.loginLink).toHaveAttribute('href', '/login');
+
+    await expect.element(tester.racesLink).not.toBeInTheDocument();
   });
 });
