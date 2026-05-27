@@ -36,4 +36,18 @@ describe('UserService', () => {
 
     expect(actualUser, 'The observable should return the user').toBe(user);
   });
+
+  it('should register a user', () => {
+    let actualUser: UserModel | undefined;
+    const userService = TestBed.inject(UserService);
+    userService.register(user.login, 'password', 1986).subscribe(fetchedUser => (actualUser = fetchedUser));
+
+    const req = http.expectOne({ method: 'POST', url: 'https://ponyracer.ninja-squad.com/api/users' });
+
+    expect(req.request.body).toStrictEqual({ login: user.login, password: 'password', birthYear: 1986 });
+
+    req.flush(user);
+
+    expect(actualUser, 'You should emit the user.').toBe(user);
+  });
 });

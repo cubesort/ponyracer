@@ -13,4 +13,8 @@ export class UserService {
   authenticate(login: string, password: string) {
     return this.http.post<UserModel>(`${this.baseUrl}/api/users/authentication`, { login, password });
   }
+
+  register(login: string, password: string, birthYear: number) {
+    return this.http.post<UserModel>(`${this.baseUrl}/api/users`, { login, password, birthYear });
+  }
 }

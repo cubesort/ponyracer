@@ -9,6 +9,7 @@ class HomeTester {
   readonly subtitle = this.title.getByCss('small');
   readonly racesLink = page.getByRole('link', { name: 'Races' });
   readonly loginLink = page.getByRole('link', { name: 'Login' });
+  readonly registerLink = page.getByRole('link', { name: 'Register' });
 }
 
 describe('Home', () => {
@@ -27,10 +28,12 @@ describe('Home', () => {
     await expect.element(tester.subtitle).toHaveTextContent('Always a pleasure to bet on ponies');
   });
 
-  it('should display a link to go to the login page', async () => {
+  it('should display a link to go to the login page and another to the register page', async () => {
     const tester = new HomeTester();
 
     await expect.element(tester.loginLink).toHaveAttribute('href', '/login');
+
+    await expect.element(tester.registerLink).toHaveAttribute('href', '/register');
 
     await expect.element(tester.racesLink).not.toBeInTheDocument();
   });
