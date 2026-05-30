@@ -1,0 +1,4 @@
+input.ng-touched.ng-invalid,
+pr-birth-year-input.ng-touched.ng-invalid input {
+  border: 1px solid red;
+}

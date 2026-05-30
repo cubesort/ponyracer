@@ -73,9 +73,10 @@ test.describe('Register page', () => {
 
     await birthYearInput.clear();
     await birthYearInput.blur();
-    await birthYearInput.fill('1986');
+    await birthYearInput.fill('86');
     await birthYearInput.blur();
     await expect(page.locator('form')).not.toContainText('This is not a valid year');
+    await expect(page.locator('.formatted-year')).toContainText('1986');
 
     const response = page.waitForResponse('**/api/users');
     await submitButton.click();

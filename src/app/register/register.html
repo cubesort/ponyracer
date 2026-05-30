@@ -1,6 +1,6 @@
 <h1>Register</h1>
 
-<form (submit)="register()" [formGroup]="userForm">
+<form (ngSubmit)="register()" [formGroup]="userForm">
   <div class="mb-3">
     <label for="login" class="form-label">Login</label>
     <input id="login" class="form-control" formControlName="login" />
@@ -34,7 +34,7 @@
   </div>
   <div class="mb-3">
     <label for="birthYear" class="form-label">Birth Year</label>
-    <input id="birthYear" class="form-control" formControlName="birthYear" type="number" />
+    <pr-birth-year-input inputId="birthYear" formControlName="birthYear" />
     @if (birthYearCtrl.touched && birthYearCtrl.hasError('required')) {
       <div class="invalid-feedback">Birth year is required</div>
     }
