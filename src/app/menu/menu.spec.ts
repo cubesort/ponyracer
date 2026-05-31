@@ -1,7 +1,11 @@
+import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { provideRouter, RouterLink } from '@angular/router';
+import { provideRouter, Router, RouterLink } from '@angular/router';
+import { Mocked } from 'vitest';
 import { page } from 'vitest/browser';
+import { UserModel } from '../models/user-model';
+import { UserService } from '../user-service';
 import { Menu } from './menu';
 
 class MenuTester {
@@ -9,12 +13,21 @@ class MenuTester {
   readonly root = page.elementLocator(this.fixture.nativeElement);
   readonly navbar = page.getByCss('#navbar');
   readonly toggleButton = page.getByRole('button');
+  readonly logoutButton = page.getByCss('button:has(.fa-power-off)');
 }
 
 describe('Menu', () => {
+  let currentUser: WritableSignal<UserModel | undefined>;
+  let userService: Pick<Mocked<UserService>, 'logout'> & Pick<UserService, 'currentUser'>;
+
   beforeEach(() => {
+    currentUser = signal(undefined);
+    userService = {
+      logout: vi.fn().mockName('UserService.logout'),
+      currentUser
+    };
     TestBed.configureTestingModule({
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), { provide: UserService, useValue: userService }]
     });
   });
 
@@ -41,6 +54,45 @@ describe('Menu', () => {
 
     const routerLinks = tester.fixture.debugElement.queryAll(By.directive(RouterLink));
 
-    expect(routerLinks, 'You should have 2 routerLinks: one to the home and one to the races page').toHaveLength(2);
+    expect(routerLinks, 'You should have only 1 routerLink to the home page when the user is not logged in').toHaveLength(1);
+
+    currentUser.set({ login: 'cedric', money: 2000 } as UserModel);
+    await tester.fixture.whenStable();
+
+    const linksAfterLogin = tester.fixture.debugElement.queryAll(By.directive(RouterLink));
+
+    expect(
+      linksAfterLogin,
+      'You should have 2 routerLink: one to the races and one to the home page when the user is logged in'
+    ).toHaveLength(2);
+  });
+
+  it('should display the user if logged in', async () => {
+    const tester = new MenuTester();
+
+    await expect.element(tester.root).toBeVisible();
+
+    currentUser.set({ login: 'cedric', money: 2000 } as UserModel);
+
+    await expect.element(tester.root).toHaveTextContent('cedric');
+    await expect.element(tester.root).toHaveTextContent('2,000');
+  });
+
+  it('should display a logout button', async () => {
+    const tester = new MenuTester();
+    await tester.toggleButton.click();
+
+    const router = TestBed.inject(Router);
+    vi.spyOn(router, 'navigateByUrl');
+
+    currentUser.set({ login: 'cedric', money: 2000 } as UserModel);
+
+    await expect.element(tester.logoutButton).toBeVisible();
+    await expect.element(tester.logoutButton.getByCss('span.fa-power-off')).toBeVisible();
+
+    await tester.logoutButton.click();
+
+    expect(userService.logout).toHaveBeenCalled();
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/');
   });
 });

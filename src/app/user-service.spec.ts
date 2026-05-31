@@ -35,6 +35,7 @@ describe('UserService', () => {
     req.flush(user);
 
     expect(actualUser, 'The observable should return the user').toBe(user);
+    expect(userService.currentUser()).toStrictEqual(user);
   });
 
   it('should register a user', () => {
@@ -49,5 +50,16 @@ describe('UserService', () => {
     req.flush(user);
 
     expect(actualUser, 'You should emit the user.').toBe(user);
+  });
+
+  it('should logout the user', () => {
+    // log in the user
+    const userService = TestBed.inject(UserService);
+    userService.authenticate('cedric', 'hello').subscribe();
+    http.expectOne({ method: 'POST', url: 'https://ponyracer.ninja-squad.com/api/users/authentication' }).flush(user);
+
+    userService.logout();
+
+    expect(userService.currentUser()).toBeUndefined();
   });
 });

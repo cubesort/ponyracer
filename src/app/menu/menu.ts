@@ -1,17 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { UserService } from '../user-service';
+import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'pr-menu',
-  imports: [RouterLink],
+  imports: [RouterLink, DecimalPipe],
   templateUrl: './menu.html',
   styleUrl: './menu.css'
 })
 export class Menu {
-  readonly navbarCollapsed = signal(true);
+  readonly userService = inject(UserService);
+  readonly router = inject(Router);
+
+  protected readonly navbarCollapsed = signal(true);
+  protected readonly user = this.userService.currentUser;
 
   toggleNavbar() {
     this.navbarCollapsed.update(navbarCollapsed => !navbarCollapsed);
+  }
+
+  logout() {
+    this.userService.logout();
+    this.router.navigateByUrl('/');
   }
 }

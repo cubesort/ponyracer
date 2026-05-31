@@ -1,6 +1,9 @@
+import { signal, WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { page } from 'vitest/browser';
+import { UserModel } from '../models/user-model';
+import { UserService } from '../user-service';
 import { Home } from './home';
 
 class HomeTester {
@@ -13,9 +16,13 @@ class HomeTester {
 }
 
 describe('Home', () => {
+  let currentUser: WritableSignal<UserModel | undefined>;
+
   function prepare() {
+    currentUser = signal(undefined);
+    const userService: Pick<UserService, 'currentUser'> = { currentUser };
     TestBed.configureTestingModule({
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), { provide: UserService, useValue: userService }]
     });
   }
 
@@ -36,5 +43,14 @@ describe('Home', () => {
     await expect.element(tester.registerLink).toHaveAttribute('href', '/register');
 
     await expect.element(tester.racesLink).not.toBeInTheDocument();
+  });
+
+  it('should display only a link to go the races page if logged in', async () => {
+    const tester = new HomeTester();
+    currentUser.set({ login: 'cedric' } as UserModel);
+
+    await expect.element(tester.racesLink).toHaveAttribute('href', '/races');
+    await expect.element(tester.loginLink).not.toBeInTheDocument();
+    await expect.element(tester.registerLink).not.toBeInTheDocument();
   });
 });
