@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { effect, inject, Injectable, signal } from '@angular/core';
-import { API_BASE_URL } from './tokens';
+import { environment } from '../environments/environment';
 import { UserModel } from './models/user-model';
 import { tap } from 'rxjs';
 
@@ -11,7 +11,6 @@ const LOCAL_STORAGE_USER_KEY = 'rememberMe';
 })
 export class UserService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = inject(API_BASE_URL);
 
   private readonly user = signal<UserModel | undefined>(this.retrieveUser());
 
@@ -30,12 +29,12 @@ export class UserService {
 
   authenticate(login: string, password: string) {
     return this.http
-      .post<UserModel>(`${this.baseUrl}/api/users/authentication`, { login, password })
+      .post<UserModel>(`${environment.baseUrl}/api/users/authentication`, { login, password })
       .pipe(tap(user => this.user.set(user)));
   }
 
   register(login: string, password: string, birthYear: number) {
-    return this.http.post<UserModel>(`${this.baseUrl}/api/users`, { login, password, birthYear });
+    return this.http.post<UserModel>(`${environment.baseUrl}/api/users`, { login, password, birthYear });
   }
 
   logout() {
