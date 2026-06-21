@@ -3,7 +3,17 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { jwtInterceptor } from './jwt-interceptor';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideSignalFormsConfig } from '@angular/forms/signals';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideBrowserGlobalErrorListeners(), provideRouter(routes), provideHttpClient(withInterceptors([jwtInterceptor]))]
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideRouter(routes),
+    provideSignalFormsConfig({
+      classes: {
+        'is-invalid': field => field.state().invalid() && field.state().touched()
+      }
+    }),
+    provideHttpClient(withInterceptors([jwtInterceptor]))
+  ]
 };
