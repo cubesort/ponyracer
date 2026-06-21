@@ -5,12 +5,12 @@ export default defineConfig({
     testTimeout: 5000,
     hookTimeout: 5000,
     browser: {
-      screenshotFailures: false,
+      screenshotFailures: false
     },
     expect: {
       poll: {
-        interval: 5,
-      },
-    },
-  },
+        interval: 5
+      }
+    }
+  }
 });
