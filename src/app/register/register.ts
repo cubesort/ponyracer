@@ -1,70 +1,55 @@
 import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, NonNullableFormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
-import { UserService } from '../user-service';
+import { form, FormField, FormRoot, max, min, minLength, required, validate } from '@angular/forms/signals';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { BirthYearInput } from '../birth-year-input/birth-year-input';
+import { UserService } from '../user-service';
 
 @Component({
   selector: 'pr-register',
-  imports: [ReactiveFormsModule, BirthYearInput],
+  imports: [FormRoot, FormField, BirthYearInput],
   templateUrl: './register.html',
   styleUrl: './register.css'
 })
 export class Register {
-  private readonly fb = inject(NonNullableFormBuilder);
   private readonly router = inject(Router);
   private readonly userService = inject(UserService);
 
   protected readonly registrationFailed = signal(false);
 
-  protected readonly loginCtrl = this.fb.control('', [Validators.required, Validators.minLength(3)]);
-  protected readonly passwordCtrl = this.fb.control('', [Validators.required]);
-  protected readonly confirmPasswordCtrl = this.fb.control('', [Validators.required]);
-  protected readonly birthYearCtrl = this.fb.control<number | null>(null, [
-    Validators.required,
-    Validators.min(1900),
-    Validators.max(new Date().getFullYear())
-  ]);
-
-  protected readonly passwordGroup = this.fb.group(
-    {
-      password: this.passwordCtrl,
-      confirmPassword: this.confirmPasswordCtrl
+  protected readonly userForm = form(
+    signal({
+      login: '',
+      password: '',
+      confirmPassword: '',
+      birthYear: null as number | null
+    }),
+    path => {
+      required(path.login);
+      minLength(path.login, 3);
+      required(path.password);
+      required(path.confirmPassword);
+      validate(path.confirmPassword, context => {
+        const password = context.valueOf(path.password);
+        const confirmPassword = context.value();
+        return password === confirmPassword ? undefined : { kind: 'matchingError' };
+      });
+      required(path.birthYear);
+      min(path.birthYear, 1900);
+      max(path.birthYear, new Date().getFullYear());
     },
-    { validators: [Register.passwordMatch] }
+    { submission: { action: () => this.register() } }
   );
 
-  protected readonly userForm = this.fb.group({
-    login: this.loginCtrl,
-    passwordGroup: this.passwordGroup,
-    birthYear: this.birthYearCtrl
-  });
-
-  protected register() {
+  private async register() {
     this.registrationFailed.set(false);
+    const { login, password, birthYear } = this.userForm().value();
 
-    if (this.userForm.invalid) {
-      this.userForm.markAllAsTouched();
-      return;
+    try {
+      await firstValueFrom(this.userService.register(login, password, birthYear!));
+      this.router.navigateByUrl('/');
+    } catch {
+      this.registrationFailed.set(true);
     }
-
-    const {
-      login,
-      passwordGroup: { password },
-      birthYear
-    } = this.userForm.getRawValue();
-
-    this.userService.register(login, password, birthYear!).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/');
-      },
-      error: () => {
-        this.registrationFailed.set(true);
-      }
-    });
-  }
-
-  private static passwordMatch(group: AbstractControl<{ password: string; confirmPassword: string }>): ValidationErrors | null {
-    return group.value.password === group.value.confirmPassword ? null : { matchingError: true };
   }
 }

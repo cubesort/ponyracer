@@ -1,45 +1,53 @@
 <h1>Register</h1>
 
-<form (ngSubmit)="register()" [formGroup]="userForm">
+<form [formRoot]="userForm">
   <div class="mb-3">
     <label for="login" class="form-label">Login</label>
-    <input id="login" class="form-control" formControlName="login" />
-    @if (loginCtrl.touched && loginCtrl.hasError('required')) {
-      <div class="invalid-feedback">Login is required</div>
-    }
-    @if (loginCtrl.touched && loginCtrl.hasError('minlength')) {
-      <div class="invalid-feedback">Your login should be at least 3 characters</div>
-    }
-  </div>
-  <div class="mb-3" formGroupName="passwordGroup">
-    <div>
-      <label for="password" class="form-label">Password</label>
-      <input id="password" class="form-control" formControlName="password" type="password" />
-      @if (passwordCtrl.touched && passwordCtrl.hasError('required')) {
-        <div class="invalid-feedback">Password is required</div>
+    <input id="login" class="form-control" [formField]="userForm.login" />
+    @let login = userForm.login();
+    @if (login.touched() && !login.valid()) {
+      @if (login.getError('required')) {
+        <div class="invalid-feedback">Login is required</div>
       }
-    </div>
-
-    <div>
-      <label for="confirmPassword" class="form-label">Confirm Password</label>
-      <input id="confirmPassword" class="form-control" formControlName="confirmPassword" type="password" />
-      @if (confirmPasswordCtrl.touched && confirmPasswordCtrl.hasError('required')) {
-        <div class="invalid-feedback">Password confirmation is required</div>
+      @if (login.getError('minLength')) {
+        <div class="invalid-feedback">Your login should be at least 3 characters</div>
       }
-    </div>
-
-    @if (passwordGroup.touched && passwordGroup.hasError('matchingError')) {
-      <div class="invalid-feedback">Your password does not match</div>
     }
   </div>
   <div class="mb-3">
-    <label for="birthYear" class="form-label">Birth Year</label>
-    <pr-birth-year-input inputId="birthYear" formControlName="birthYear" />
-    @if (birthYearCtrl.touched && birthYearCtrl.hasError('required')) {
-      <div class="invalid-feedback">Birth year is required</div>
+    <label for="password" class="form-label">Password</label>
+    <input id="password" class="form-control" [formField]="userForm.password" type="password" />
+    @let password = userForm.password();
+    @if (password.touched() && password.invalid()) {
+      @if (password.getError('required')) {
+        <div class="invalid-feedback">Password is required</div>
+      }
     }
-    @if (birthYearCtrl.touched && (birthYearCtrl.hasError('min') || birthYearCtrl.hasError('max'))) {
-      <div class="invalid-feedback">This is not a valid year</div>
+  </div>
+  <div class="mb-3">
+    <label for="confirmPassword" class="form-label">Confirm Password</label>
+    <input id="confirmPassword" class="form-control" [formField]="userForm.confirmPassword" type="password" />
+    @let confirmPassword = userForm.confirmPassword();
+    @if (confirmPassword.touched() && confirmPassword.invalid()) {
+      @if (confirmPassword.getError('required')) {
+        <div class="invalid-feedback">Password confirmation is required</div>
+      }
+      @if (confirmPassword.getError('matchingError')) {
+        <div class="invalid-feedback">Your password does not match</div>
+      }
+    }
+  </div>
+  <div class="mb-3">
+    <label for="birth-year" class="form-label">Birth Year</label>
+    <pr-birth-year-input inputId="birth-year" [formField]="userForm.birthYear" />
+    @let birthYear = userForm.birthYear();
+    @if (birthYear.touched() && birthYear.invalid()) {
+      @if (birthYear.getError('required')) {
+        <div class="invalid-feedback">Birth year is required</div>
+      }
+      @if (birthYear.getError('min') || birthYear.getError('max')) {
+        <div class="invalid-feedback">This is not a valid year</div>
+      }
     }
   </div>
 

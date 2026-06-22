@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { disabled, form, FormField, required } from '@angular/forms/signals';
 import { page, userEvent } from 'vitest/browser';
 import { BirthYearInput } from './birth-year-input';
 
@@ -9,19 +9,24 @@ class BirthYearInputTester {
   readonly input = page.getByLabelText('Birth year');
   readonly formattedYear = page.getByCss('.formatted-year');
   readonly parentFormValue = page.getByCss('span');
+  readonly errors = page.getByCss('.error');
 }
 
 @Component({
-  template: `<form [formGroup]="form">
+  template: `<form>
     <label for="birth-year">Birth year</label>
-    <pr-birth-year-input inputId="birth-year" formControlName="birthYear" />
-    <span>{{ form.controls.birthYear.value }}</span>
+    <pr-birth-year-input inputId="birth-year" [formField]="form.birthYear" />
+    <span>{{ user().birthYear }}</span>
   </form>`,
-  imports: [ReactiveFormsModule, BirthYearInput],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  imports: [FormField, BirthYearInput]
 })
 class BirthYearInputTest {
-  form = inject(NonNullableFormBuilder).group({ birthYear: 1982 as number | null });
+  readonly isDisabled = signal(false);
+  readonly user = signal({ birthYear: 1982 as number | null });
+  readonly form = form(this.user, f => {
+    disabled(f.birthYear, { when: this.isDisabled });
+    required(f.birthYear);
+  });
 }
 
 describe('BirthYearInput', () => {
@@ -126,25 +131,49 @@ describe('BirthYearInput', () => {
     await expect.element(tester.parentFormValue).toHaveTextContent(`${computedYearInCurrentCentury}`);
   });
 
+  it('should propagate null when the value is cleared', async () => {
+    const tester = new BirthYearInputTester();
+
+    // start with initial value 1982
+    await expect.element(tester.parentFormValue).toHaveTextContent('1982');
+
+    // clear the input
+    await tester.input.fill('');
+    await userEvent.tab();
+
+    // the form value should be null
+    await expect.element(tester.parentFormValue).toHaveTextContent('');
+    expect(tester.fixture.componentInstance.form.birthYear().value()).toBeNull();
+  });
+
+  it('should have the is-invalid class if invalid', async () => {
+    const tester = new BirthYearInputTester();
+
+    await tester.input.fill('');
+    await userEvent.tab();
+
+    await expect.element(tester.input).toHaveClass('is-invalid');
+  });
+
   it('should be disabled if the form control is disabled', async () => {
     const tester = new BirthYearInputTester();
 
     await expect.element(tester.input).not.toBeDisabled();
 
-    tester.fixture.componentInstance.form.controls.birthYear.disable();
+    tester.fixture.componentInstance.isDisabled.set(true);
 
     // the input should be disabled if the form control is disabled
     await expect.element(tester.input).toBeDisabled();
   });
 
-  it('should call the onTouched callback on blur', async () => {
+  it('should mark the field as touched on blur', async () => {
     const tester = new BirthYearInputTester();
 
-    const onTouched = vi.spyOn(tester.fixture.componentInstance.form.controls.birthYear, 'markAsTouched');
+    const markAsTouched = vi.spyOn(tester.fixture.componentInstance.form.birthYear(), 'markAsTouched');
     await tester.input.click();
     await userEvent.tab();
 
-    // it should have called the onTouched callback on blur
-    expect(onTouched).toHaveBeenCalledWith();
+    // it should have emitted the touch event on blur
+    expect(markAsTouched).toHaveBeenCalledWith();
   });
 });
